@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String    @id @default(uuid()) @db.Uuid
+  email    String    @unique
+  username String
+  hashpass String
+  salt     String
+  columns  Column[]  
+  comments Comment[]  
+  cards    Card[]
+}
+
+
+enum CardStatus {
+  start
+  inProgress
+  done
+}
+
+model Column {
+  id     String @id @default(uuid()) @db.Uuid
+  title  String
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cards  Card[]
+}
+
+model Card {
+  id       String    @id @default(uuid()) @db.Uuid
+  text     String
+  status   CardStatus
+  column   Column    @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  columnId String    @map("column_id")
+  user     User      @relation(fields: [userId],references: [id],onDelete: Cascade)
+  userId   String    @map("user_id")
+  comments Comment[]
+}
+
+model Comment {
+  id     String @id @default(uuid()) @db.Uuid
+  text   String
+  cardId String @map("card_id")
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
