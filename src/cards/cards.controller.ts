@@ -34,6 +34,11 @@ export class CardsController {
     return await this.cardsService.create({ ...dto, userId });
   }
 
+  @ApiOperation({ summary: 'Получить все карточки определенной колонки' })
+  @Get(':columnId')
+  public async findMany(@Param('columnId') columnId: string): Promise<Card[]> {
+    return await this.cardsService.findMany({ columnId });
+  }
   
   @ApiOperation({ summary: 'Изменить содержание кароточки' })
   @UseGuards(CardOwnerGuard)
@@ -44,13 +49,6 @@ export class CardsController {
   ): Promise<Card> {
     return await this.cardsService.updateOne({ id }, { text });
   }
-
-  @ApiOperation({ summary: 'Получить все карточки определенной колонки' })
-  @Get(':columnId')
-  public async findMany(@Param('columnId') columnId: string): Promise<Card[]> {
-    return await this.cardsService.findMany({ columnId });
-  }
-
 
   @ApiOperation({ summary: 'Изменить колонку у карточки' })
   @ApiQuery({ name: 'cardId', type: String, description: 'ID карточки' })
